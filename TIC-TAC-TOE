@@ -1,0 +1,206 @@
+TASK/PROJECT:
+TIC-TAC-TOE AI
+Implement an AI agent that plays the classic game of Tic-Tac-Toe against a human player. You can use algorithms like Minimax with or without Alpha-Beta Pruning to make the AI player unbeatable.
+This project will help you understand game theory and basic search
+
+algorithms.
+
+PROGRAM(CODE):
+import math
+
+def print_board(board):
+    for i in board:
+        print("|".join(i))
+        print("-" * 5)
+
+def winner(board):
+    # Check the ROWS
+    for row in board:
+        if row[0] == row[1] == row[2] and row[0] != ' ':
+            return row[0]
+    # Check the COLUMNS
+    for col in range(3):
+        if board[0][col] == board[1][col] == board[2][col] and board[0][col] != ' ':
+            return board[0][col]
+    # Check the DIAGNOLS
+    if board[0][0] == board[1][1] == board[2][2] and board[0][0] != ' ':
+        return board[0][0]
+    if board[0][2] == board[1][1] == board[2][0] and board[0][2] != ' ':
+        return board[0][2]
+    return None
+
+def boardFull(board):
+    for i in board:
+        if ' ' in i:
+            return False
+    return True
+
+def minimax(board, depth, is_max, alpha, beta):
+    w = winner(board)
+    if w == 'X':
+        return -1
+    elif w == 'O':
+        return 1
+    elif boardFull(board):
+        return 0
+
+    if is_max:
+        max_eval = -math.inf
+        for i in range(3):
+            for j in range(3):
+                if board[i][j] == ' ':
+                    board[i][j] = 'O'
+                    eval = minimax(board, depth + 1, False, alpha, beta)
+                    board[i][j] = ' '
+                    max_eval = max(max_eval, eval)
+                    alpha = max(alpha, eval)
+                    if beta <= alpha:
+                        return max_eval
+        return max_eval
+    else:
+        m = math.inf
+        for i in range(3):
+            for j in range(3):
+                if board[i][j] == ' ':
+                    board[i][j] = 'X'
+                    eval = minimax(board, depth + 1, True, alpha, beta)
+                    board[i][j] = ' '
+                    m = min(m, eval)
+                    beta = min(beta, eval)
+                    if beta <= alpha:
+                        return m
+        return m
+
+def best_move(board):
+    best_val = -math.inf
+    move = (-1, -1)
+    for i in range(3):
+        for j in range(3):
+            if board[i][j] == ' ':
+                board[i][j] = 'O'
+                move_val = minimax(board, 0, False, -math.inf, math.inf)
+                board[i][j] = ' '
+                if move_val > best_val:
+                    move = (i, j)
+                    best_val = move_val
+    return move
+
+def start_game():
+    board = [[' ' for _ in range(3)] for _ in range(3)]
+    human = True #here human represents the user.
+
+    while True:
+        print_board(board)
+        print("\n")
+        if winner(board):
+            print(f"{winner(board)} wins!")
+            break
+        if boardFull(board):
+            print("It's a tie!")
+            break
+
+        if human:
+            while True:
+                try:
+                    row = int(input("Enter the row (0, 1, or 2): "))
+                    col = int(input("Enter the column (0, 1, or 2): "))
+                    if board[row][col] == ' ':
+                        board[row][col] = 'X'
+                        break
+                    else:
+                        print("The cell is already occupied. Try again.")
+                except (ValueError, IndexError):
+                    print("Invalid input. Enter a number between 0 and 2.")
+            human = False
+        else:
+            move = best_move(board)
+            board[move[0]][move[1]] = 'O'
+            human = True
+
+start_game()
+
+
+OUTPUT:
+ | | 
+-----
+ | | 
+-----
+ | | 
+-----
+Enter the row (0, 1, or 2): 1
+Enter the column (0, 1, or 2): 1
+ | | 
+-----
+ |X| 
+-----
+ | | 
+-----
+
+
+O| | 
+-----
+ |X| 
+-----
+ | | 
+-----
+Enter the row (0, 1, or 2): 0
+Enter the column (0, 1, or 2): 2
+O| |X
+-----
+ |X| 
+-----
+ | | 
+-----
+
+
+O| |X
+-----
+ |X| 
+-----
+O| | 
+-----
+Enter the row (0, 1, or 2): 1
+Enter the column (0, 1, or 2): 0
+O| |X
+-----
+X|X| 
+-----
+O| | 
+-----
+
+
+O| |X
+-----
+X|X|O
+-----
+O| | 
+-----
+Enter the row (0, 1, or 2): 2
+Enter the column (0, 1, or 2): 1
+O| |X
+-----
+X|X|O
+-----
+O|X| 
+-----
+
+
+O|O|X
+-----
+X|X|O
+-----
+O|X| 
+-----
+Enter the row (0, 1, or 2): 0
+Enter the column (0, 1, or 2): 1
+The cell is already occupied. Try again.
+Enter the row (0, 1, or 2): 2
+Enter the column (0, 1, or 2): 2
+O|O|X
+-----
+X|X|O
+-----
+O|X|X
+-----
+
+It's a tie!
