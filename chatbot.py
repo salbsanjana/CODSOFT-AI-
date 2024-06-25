@@ -1,3 +1,11 @@
+TASK/PROJECT:
+CHATBOT WITH RULE-BASED RESPONSES
+Build a simple chatbot that responds to user inputs based on predefined rules. Use if-else statements or pattern matching
+techniques to identify user queries and provide appropriate responses. This will give you a basic understanding of natural
+language processing and conversation flow.
+
+
+PROGRAM(CODE):
 from datetime import datetime
 
 # Define the chatbot function
@@ -52,3 +60,24 @@ while True:
         break
     res = chatBot(n)
     print(f"Chatbot: {res}")
+
+
+OUTPUT:
+You: hello
+Chatbot: Hi there! How are you?
+You: how are you
+Chatbot: I'm here and ready to help you! How about you?
+You: time
+Chatbot: The current time is 13:37:49.
+You: date
+Chatbot: Today's date is 2024-06-25.
+You: joke
+Chatbot: Why don't scientists trust atoms? Because they make up everything!
+You: how old are you
+Chatbot: I'm a creation of OpenAI, so I don't age like humans. But I was trained on a vast amount of data up until 2023.
+You: favourite food
+Chatbot: I'm sorry, I don't understand that. Can you please rephrase?
+You: favorite food
+Chatbot: Since I don't have a physical form or the ability to taste, I don't have favorite foods like humans do. But I can help you with information or recommendations about different types of food if you'd like!
+You: favorite color
+Chatbot: As an AI, I don't have preferences, but I think blue is quite nice!
