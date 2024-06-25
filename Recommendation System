@@ -1,0 +1,91 @@
+TASK/PROJECT:
+RECOMMENDATION SYSTEM
+Create a simple recommendation system that suggests items to users based on their preferences. 
+You can use techniques like collaborative filtering or content-based filtering to recommend
+movies, books, or products to users.
+
+
+PROGRAM(CODE):
+import numpy as np
+import pandas as pd
+
+# Create a simple user-item rating matrix
+data = {
+    'User': ['User1', 'User1', 'User1', 'User2', 'User2', 'User2', 'User3', 'User3', 'User4', 'User4', 'User5', 'User5'],
+    'Items': ['Item1', 'Item2', 'Item3', 'Item1', 'Item2', 'Item4', 'Item1', 'Item3', 'Item2', 'Item3', 'Item1', 'Item4'],
+    'Rating': [5, 3, 4, 4, 5, 2, 3, 4, 2, 4, 3, 5]
+}
+
+df = pd.DataFrame(data)
+print(df)
+
+# Create a pivot table to create a user-item matrix
+matrix = df.pivot_table(index='User', columns='Items', values='Rating').fillna(0)
+print(matrix)
+
+from sklearn.metrics.pairwise import cosine_similarity
+
+# Compute item-item similarity matrix using cosine similarity
+similarity = cosine_similarity(matrix.T)
+similarity_df = pd.DataFrame(similarity, index=matrix.columns, columns=matrix.columns)
+print(similarity_df)
+
+def recommendation(user, matrix, similarity_df, num_rec=2):
+    rated_items = matrix.loc[user]
+    unrated_items = rated_items[rated_items == 0].index.tolist()
+    
+    recommendations = {}
+    
+    for item in unrated_items:
+        similar_items = similarity_df[item]
+        user_rated_items = rated_items[rated_items > 0].index.tolist()
+        weighted_sum = sum([similar_items[i] * rated_items[i] for i in user_rated_items])
+        similarity_sum = sum([similar_items[i] for i in user_rated_items])
+        
+        if similarity_sum != 0:
+            recommendations[item] = weighted_sum / similarity_sum
+        else:
+            recommendations[item] = 0
+    
+    # Sort recommendations by score and return top-n
+    recommended_items = sorted(recommendations.items(), key=lambda x: x[1], reverse=True)[:num_rec]
+    
+    return [item for item, score in recommended_items]
+
+# Example usage
+user = 'User1'
+recommended_items = recommendation(user, matrix, similarity_df, num_rec=2)
+print(f"Recommended items for {user}: {recommended_items}")
+
+
+
+OUTPUT:
+     User  Items  Rating
+0   User1  Item1       5
+1   User1  Item2       3
+2   User1  Item3       4
+3   User2  Item1       4
+4   User2  Item2       5
+5   User2  Item4       2
+6   User3  Item1       3
+7   User3  Item3       4
+8   User4  Item2       2
+9   User4  Item3       4
+10  User5  Item1       3
+11  User5  Item4       5
+
+Items  Item1  Item2  Item3  Item4
+User                             
+User1    5.0    3.0    4.0    0.0
+User2    4.0    5.0    0.0    2.0
+User3    3.0    0.0    4.0    0.0
+User4    0.0    2.0    4.0    0.0
+User5    3.0    0.0    0.0    5.0
+
+Items     Item1     Item2     Item3     Item4
+Items                                        
+Item1  1.000000  0.739180  0.601317  0.556036
+Item2  0.739180  1.000000  0.468293  0.301238
+Item3  0.601317  0.468293  1.000000  0.000000
+Item4  0.556036  0.301238  0.000000  1.000000
+Recommended items for User1: ['Item4']
